@@ -4,21 +4,27 @@
 
 #define NUM_PROC 6
 
-void gen_attr();
-int* gen_rand_table(int, int, int, int);
-int* gen_arrival_time();
-int* gen_burst_time();
-int* gen_priority();
+int** gen_attr();
+int* _gen_rand_table(int, int, int, int);
+int* _gen_arrival_time();
+int* _gen_burst_time();
+int* _gen_priority();
 
-void gen_attr() {
+int** gen_attr() {
     // Set random seed
     srand(time(NULL));
+
+    // Return process attributes as [arrival_time, burst_time, priority]
+    int** proc_attr_table = (int**)malloc(3 * sizeof(int*));
+    proc_attr_table[0] = _gen_arrival_time();
+    proc_attr_table[1] = _gen_burst_time();
+    proc_attr_table[2] = _gen_priority();
+    return proc_attr_table;
 }
 
-int* gen_rand_table(int start, int end, int num_processes, int limit) {
+int* _gen_rand_table(int start, int end, int num_processes, int limit) {
     // Allocate memory
     int* rand_table = (int *)malloc(num_processes * sizeof(int));
-    int* dup_table = (int *)calloc(end - start, sizeof(int));
 
 regen_table:
     for (int i=0; i<num_processes; i++) {
@@ -27,10 +33,12 @@ regen_table:
     }
 
     // Check for duplicates
+    int* dup_table = (int *)calloc(end - start, sizeof(int));
     for (int i=0; i<num_processes; i++) {
         dup_table[rand_table[i] - start]++;
         if (dup_table[rand_table[i] - start] > limit) {
             // Regenerate random values since duplicate limit reached
+            free(dup_table);
             goto regen_table;
         }
     }
@@ -38,16 +46,16 @@ regen_table:
     return rand_table;
 }
 
-int* gen_arrival_time() {
-    return gen_rand_table(0, 8, NUM_PROC, 3);
+int* _gen_arrival_time() {
+    return _gen_rand_table(0, 8, NUM_PROC, 3);
 }
 
 
-int* gen_burst_time() {
-    return gen_rand_table(3, 10, NUM_PROC, 3);
+int* _gen_burst_time() {
+    return _gen_rand_table(3, 10, NUM_PROC, 3);
 }
 
-int* gen_priority() {
-    return gen_rand_table(1, 4, NUM_PROC, 2);
+int* _gen_priority() {
+    return _gen_rand_table(1, 4, NUM_PROC, 2);
 }
 

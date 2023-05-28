@@ -3,9 +3,10 @@
 #include "attr.h"
 
 int main(int argc, char *argv[]) {
-    int* arrival_time = gen_arrival_time();
-    int* burst_time = gen_burst_time();
-    int* priority = gen_burst_time();
+    int** proc_attr_table = gen_attr();
+    int* arrival_time = proc_attr_table[0];
+    int* burst_time = proc_attr_table[1];
+    int* priority = proc_attr_table[2];
 
     for (int i=0; i<NUM_PROC; i++) {
         printf("Process %d: %d %d %d\n", i, arrival_time[i], burst_time[i], priority[i]);
@@ -14,4 +15,5 @@ int main(int argc, char *argv[]) {
     free(arrival_time);
     free(burst_time);
     free(priority);
+    free(proc_attr_table);
 }
