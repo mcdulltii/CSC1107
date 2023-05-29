@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "attr.h"
+#include "attr.c"
 
 int main(int argc, char *argv[]) {
     int** proc_attr_table = gen_attr();
