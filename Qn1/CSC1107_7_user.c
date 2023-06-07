@@ -1,6 +1,6 @@
 /*
-A simple C application program named chardevclient.c, to access the 
-“character device” via the new read-only device driver, chardev.c in the kernel. 
+A simple C application program named CSC1107_7_user.c, to access the 
+“character device” via the new read-only device driver, CSC1107_7_kernel.c in the kernel. 
 */
 
 #include <sys/types.h>
