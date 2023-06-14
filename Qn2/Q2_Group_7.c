@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "attr.c"
+#include "init.c"
 #include "fort.c"
 
 int main(int argc, char *argv[]) {
-    int** proc_attr_table = gen_attr();
+    int** proc_attr_table = init();
     int* arrival_time = proc_attr_table[0];
     int* burst_time = proc_attr_table[1];
     int* priority = proc_attr_table[2];
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Print table
-    printf("%s\n", ft_to_string(attr_table));
+    printf("%s", ft_to_string(attr_table));
     // Destroy table
     ft_destroy_table(attr_table);
 

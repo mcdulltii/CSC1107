@@ -1,9 +1,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include "attr.h"
+#include "init.h"
 
-int** gen_attr() {
+int** init() {
     // Set random seed
     srand(time(NULL));
 
