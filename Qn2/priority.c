@@ -24,40 +24,23 @@ float* priority_scheduling(struct process* proc_table, bool preemptive) {
     }
 
     // Process scheduling loop
-    int prev_process = -1;
     while (completed != NUM_PROC) {
         int selected_process = -1;
         int highest_priority = 1000;
 
-        if (preemptive) {
-            // Find the process with the highest priority that has arrived and still needs to be executed
-            for (int i = 0; i < NUM_PROC; i++) {
-                if (proc_table[i].arrival_time <= current_time && \
-                        proc_table[i].remaining_time > 0 && \
-                        proc_table[i].priority < highest_priority) {
-                    // Decide whether to preempt previous process
-                    if (proc_table[i].priority == proc_table[prev_process].priority && \
-                            proc_table[prev_process].remaining_time > 0) {
-                        // Continue previous process without preempting
-                        highest_priority = proc_table[prev_process].priority;
-                        selected_process = prev_process;
-                    } else {
-                        // Preempt previous process with new process
-                        highest_priority = proc_table[i].priority;
+        // Find the process with the highest priority that has arrived and not completed yet
+        for (int i = 0; i < NUM_PROC; i++) {
+            if (proc_table[i].arrival_time <= current_time && \
+                    proc_table[i].remaining_time > 0) {
+                // Select the process with the highest priority
+                if (selected_process == -1 || \
+                        proc_table[i].priority < proc_table[selected_process].priority) {
+                    selected_process = i;
+                } else if (selected_process != -1 && \
+                        proc_table[i].priority == proc_table[selected_process].priority) {
+                    // Select the process that arrives first if processes have same priority
+                    if (proc_table[i].arrival_time < proc_table[selected_process].arrival_time)
                         selected_process = i;
-                    }
-                }
-            }
-        } else {
-            // Find the process with the highest priority that has arrived and not completed yet
-            for (int i = 0; i < NUM_PROC; i++) {
-                if (proc_table[i].arrival_time <= current_time && \
-                        proc_table[i].remaining_time > 0) {
-                    // Select the process with the highest priority
-                    if (selected_process == -1 || \
-                            proc_table[i].priority < proc_table[selected_process].priority) {
-                        selected_process = i;
-                    }
                 }
             }
         }
@@ -73,7 +56,6 @@ float* priority_scheduling(struct process* proc_table, bool preemptive) {
             proc_table[selected_process].remaining_time--;
             current_time++;
             // Save previous process
-            prev_process = selected_process;
         } else {
             // Execute the selected process for the entire burst time
             current_time += proc_table[selected_process].remaining_time;
