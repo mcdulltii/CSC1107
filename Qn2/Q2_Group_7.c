@@ -12,6 +12,7 @@
 // Scheduling algorithms
 #include "priority.c"
 #include "srtf.c"
+#include "sjf.c"
 
 bool get_user_input();
 int get_valid_selection();
@@ -66,6 +67,10 @@ int main(int argc, char *argv[]) {
                 break;
             case 2:
                 // SJF Scheduling
+                proc_sch_table = sjf_scheduling(proc_table);
+                printf("Average Turnaround Time: %.2f\n", proc_sch_table[0]);
+                printf("Average Waiting Time: %.2f\n", proc_sch_table[1]);
+                printf("Average Response Time: %.2f\n", proc_sch_table[2]);
                 break;
             case 3:
                 // SRTF Scheduling
@@ -133,7 +138,12 @@ int get_valid_selection() {
     char input[5];
     int value;
 retry_get_valid_selection:
-    printf("Choose a process selection algorithm [1-5]: ");
+    printf("Choose a process selection algorithm [1-5]:\n"
+    "1. First Come First Serve Scheduling\n"
+    "2. Shortest Job First Scheduling\n"
+    "3. Shortest Remaining Time First Scheduling\n"
+    "4. Round Robin Scheduling\n"
+    "5. Priority Scheduling\n");
     // Get user input
     fgets(input, sizeof(input), stdin);
     sscanf(input, "%d", &value);

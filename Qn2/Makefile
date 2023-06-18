@@ -14,5 +14,4 @@ run: build
 	./$(FNAME)
 
 clean:
-	$(RM) $(FNAME)
-
+	$(RM) $(FNAME) $(FNAME).exe
