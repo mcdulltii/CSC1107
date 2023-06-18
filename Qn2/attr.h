@@ -8,6 +8,7 @@ struct process {
     int priority;
     int start_time;
     int end_time;
+    int remaining_time;
     int turnaround_time;
     int waiting_time;
     int response_time;

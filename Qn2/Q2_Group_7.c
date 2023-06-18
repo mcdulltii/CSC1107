@@ -15,6 +15,7 @@
 
 bool get_user_input();
 int get_valid_selection();
+bool get_preempt_selection();
 
 int main(int argc, char *argv[]) {
     // Whether to generate process attributes randomly
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
         for (int i=0; i<NUM_PROC; i++) {
             sprintf(i_str, "P%d", i);
             proc_table[i].pid = i+1;
+            proc_table[i].start_time = -1;
             sprintf(arrival_time_str, "%d", arrival_time[i]);
             proc_table[i].arrival_time = arrival_time[i];
             sprintf(burst_time_str, "%d", burst_time[i]);
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
                 break;
             case 5:
                 // Priority Scheduling
-                proc_sch_table = priority_scheduling(proc_table);
+                proc_sch_table = priority_scheduling(proc_table, get_preempt_selection());
                 break;
             default:
                 printf("Invalid selection!");
@@ -83,6 +85,24 @@ int main(int argc, char *argv[]) {
 #pragma endregion PROC_SCH_SELECTION
 
 #pragma region PROC_SCH_TABLE
+        // Create process scheduling table
+        ft_table_t *sch_table = ft_create_table();
+
+        // Setup header
+        ft_set_cell_prop(sch_table, 0, FT_ANY_COLUMN, FT_CPROP_ROW_TYPE, FT_ROW_HEADER);
+        ft_write_ln(sch_table, "Average Turnaround Time", "Average Waiting Time", "Average Response Time");
+
+        // Build table values
+        char turnaround_time_str[20], waiting_time_str[20], response_time_str[20];
+        sprintf(turnaround_time_str, "%f", proc_sch_table[0]);
+        sprintf(waiting_time_str, "%f", proc_sch_table[1]);
+        sprintf(response_time_str, "%f", proc_sch_table[2]);
+        ft_write_ln(sch_table, turnaround_time_str, waiting_time_str, response_time_str);
+
+        // Print table
+        printf("%s", ft_to_string(sch_table));
+        // Destroy table
+        ft_destroy_table(sch_table);
 #pragma endregion PROC_SCH_TABLE
 
         free(arrival_time);
@@ -123,5 +143,21 @@ retry_get_valid_selection:
         goto retry_get_valid_selection;
     }
     return value;
+}
+
+bool get_preempt_selection() {
+    char input[5];
+    char value;
+retry_get_user_input:
+    printf("Should the priority scheduling algorithm be preemptive? [y/n]: ");
+    // Get user input
+    fgets(input, sizeof(input), stdin);
+    sscanf(input, "%c", &value);
+    // Check user input is y/n
+    if (value != 'y' && value != 'n') {
+        printf("Invalid input. Please enter y/n.\n");
+        goto retry_get_user_input;
+    }
+    return value == 'y'; // false is implied
 }
 
