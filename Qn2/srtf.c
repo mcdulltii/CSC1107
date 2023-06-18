@@ -3,7 +3,7 @@
 #include "attr.h"
 
 float* srtf_scheduling(struct process* proc_table) {
-    float* proc_sch_table = (float *)malloc(NUM_PROC * sizeof(float));
+    float* proc_sch_table = (float *)malloc(3 * sizeof(float));
 
 #pragma region PROC_SCH_ALGO
     int total_turnaround_time = 0;
