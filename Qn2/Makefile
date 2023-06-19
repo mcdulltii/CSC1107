@@ -3,7 +3,7 @@ CC=gcc
 
 .PHONY: build run clean
 
-all: run
+all: clean run
 
 %: %.c
 	$(CC) $< -o $@
