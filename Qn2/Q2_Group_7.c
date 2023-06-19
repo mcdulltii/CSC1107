@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
         char i_str[3], arrival_time_str[2], burst_time_str[3], priority_str[2];
         for (int i=0; i<NUM_PROC; i++) {
             sprintf(i_str, "P%d", i);
-            proc_table[i].pid = i+1;
+            proc_table[i].pid = i;
             proc_table[i].start_time = -1;
             sprintf(arrival_time_str, "%d", arrival_time[i]);
             proc_table[i].arrival_time = arrival_time[i];
