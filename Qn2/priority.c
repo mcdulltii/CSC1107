@@ -115,6 +115,8 @@ float* priority_scheduling(struct process* proc_table, bool preemptive) {
 
     // Draw gantt chart
     visualise_gantt(proc_sch_order, proc_sch_time, proc_sch_index);
+    free(proc_sch_order);
+    free(proc_sch_time);
 #pragma endregion PROC_SCH_CALC
 
     return proc_sch_table;

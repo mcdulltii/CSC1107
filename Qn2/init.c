@@ -15,6 +15,15 @@ int** init() {
     return proc_attr_table;
 }
 
+int** init_usr() {
+    // Return process attributes as [arrival_time, burst_time, priority]
+    int** proc_attr_table = (int**)malloc(3 * sizeof(int*));
+    proc_attr_table[0] = _get_attr_values("arrival time");
+    proc_attr_table[1] = _get_attr_values("burst time");
+    proc_attr_table[2] = _get_attr_values("priority");
+    return proc_attr_table;
+}
+
 int* _gen_rand_table(int start, int end, int num_processes, int limit) {
     // Allocate memory
     int* rand_table = (int *)malloc(num_processes * sizeof(int));
@@ -50,5 +59,15 @@ int* _gen_burst_time() {
 
 int* _gen_priority() {
     return _gen_rand_table(1, 4, NUM_PROC, 2);
+}
+
+int* _get_attr_values(const char* attr_name) {
+    int* attr_table = (int *)malloc(NUM_PROC * sizeof(int));
+    printf("Enter the %s for each process:\n", attr_name);
+    for (int i = 0; i < NUM_PROC; i++) {
+        printf("Process %d: ", i + 1);
+        scanf("%d%*c", &attr_table[i]);
+    }
+    return attr_table;
 }
 
