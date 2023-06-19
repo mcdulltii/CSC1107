@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Print table
-    printf("%s", ft_to_string(attr_table));
+    print(ft_to_string(attr_table), OUTPUT_FILE);
     // Destroy table
     ft_destroy_table(attr_table);
 #pragma endregion PROC_ATTR_TABLE
@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             // SRTF Scheduling
+            char* srtf_str = "\nShortest Remaining Time First Scheduling Algorithm:\n";
+            print(srtf_str, OUTPUT_FILE);
             proc_sch_table = srtf_scheduling(proc_table);
             break;
         case 4:
@@ -83,6 +85,8 @@ int main(int argc, char *argv[]) {
             break;
         case 5:
             // Priority Scheduling
+            char* priority_str = "\nPriority Scheduling Algorithm:\n";
+            print(priority_str, OUTPUT_FILE);
             proc_sch_table = priority_scheduling(proc_table, get_preempt_selection());
             break;
         default:
@@ -107,7 +111,7 @@ int main(int argc, char *argv[]) {
     ft_write_ln(sch_table, turnaround_time_str, waiting_time_str, response_time_str);
 
     // Print table
-    printf("%s", ft_to_string(sch_table));
+    print(ft_to_string(sch_table), OUTPUT_FILE);
     // Destroy table
     ft_destroy_table(sch_table);
 #pragma endregion PROC_SCH_TABLE

@@ -14,4 +14,4 @@ run: build
 	./$(FNAME)
 
 clean:
-	$(RM) $(FNAME) $(FNAME).exe
+	$(RM) $(FNAME) $(FNAME).exe $(FNAME).txt

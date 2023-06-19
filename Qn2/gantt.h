@@ -54,7 +54,7 @@ void visualise_gantt(int* proc_sch_order, int* proc_sch_time, int array_len) {
 #pragma endregion GANTT_TABLE
 
     // Print table
-    printf("%s", ft_to_string(time_table));
+    print(ft_to_string(time_table), OUTPUT_FILE);
     // Destroy table
     ft_destroy_table(gantt_table);
     // Destroy table

@@ -3,6 +3,15 @@
 #include <malloc.h>
 #include "init.h"
 
+// Custom print function
+void print(const char* output_str, char* filename) {
+    // Prints output_str and logs to output filename
+    printf("%s", output_str);
+    FILE* fptr = fopen(filename, "a");
+    fprintf(fptr, "%s", output_str);
+    fclose(fptr);
+}
+
 int** init() {
     // Set random seed
     srand(time(NULL));
