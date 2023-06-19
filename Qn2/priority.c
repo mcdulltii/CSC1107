@@ -39,8 +39,13 @@ float* priority_scheduling(struct process* proc_table, bool preemptive) {
                 } else if (selected_process != -1 && \
                         proc_table[i].priority == proc_table[selected_process].priority) {
                     // Select the process that arrives first if processes have same priority
-                    if (proc_table[i].arrival_time < proc_table[selected_process].arrival_time)
+                    if (proc_table[i].arrival_time < proc_table[selected_process].arrival_time) {
                         selected_process = i;
+                    } else if (proc_table[i].arrival_time == proc_table[selected_process].arrival_time && \
+                            proc_table[i].pid < proc_table[selected_process].pid) {
+                        // Select the process that has lower pid if processes have same priority and arrival time
+                        selected_process = i;
+                    }
                 }
             }
         }
