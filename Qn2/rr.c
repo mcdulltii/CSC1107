@@ -2,7 +2,7 @@
 #include "init.h"
 #include "attr.h"
 
-float* srtf_scheduling(struct process* proc_table) {
+float* rr_scheduling(struct process* proc_table) {
     float* proc_sch_table = (float *)malloc(3 * sizeof(float));
 
 #pragma region PROC_SCH_ALGO
