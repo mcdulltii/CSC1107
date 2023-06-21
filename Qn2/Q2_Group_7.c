@@ -10,6 +10,7 @@
 #include "attr.h"
 
 // Scheduling algorithms
+#include "fcfs.c"
 #include "priority.c"
 #include "srtf.c"
 #include "sjf.c"
@@ -69,6 +70,7 @@ int main(int argc, char *argv[]) {
     switch(get_valid_selection()) {
         case 1:
             // FCFS Scheduling
+            proc_sch_table = fcfs_scheduling(proc_table);
             break;
         case 2:
             // SJF Scheduling
