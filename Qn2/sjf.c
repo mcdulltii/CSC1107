@@ -12,7 +12,6 @@ float* sjf_scheduling(struct process* proc_table) {
     int total_turnaround_time = 0;
     int total_waiting_time = 0;
     int total_response_time = 0;
-    float throughput;
 
     int current_time = 0;
     int completed = 0;

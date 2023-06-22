@@ -2,20 +2,18 @@
 #include "init.h"
 #include "attr.h"
 
-float* sjf_scheduling(struct process* proc_table) {
+float* fcfs_scheduling(struct process* proc_table) {
     float* proc_sch_table = (float *)malloc(3 * sizeof(float));
 
 #pragma region PROC_SCH_ALGO
     int total_turnaround_time = 0;
     int total_waiting_time = 0;
     int total_response_time = 0;
-    float throughput;
 
     int current_time = 0;
     int completed = 0;
 
     for (int i = 0; i < NUM_PROC; i++) {
-
         // Wait for process to arrive
         while (current_time < proc_table[i].arrival_time) {
             current_time++;
@@ -33,7 +31,6 @@ float* sjf_scheduling(struct process* proc_table) {
 
         // Update turnaround time
         total_turnaround_time += current_time - proc_table[i].arrival_time;
-
     }
 #pragma endregion PROC_SCH_ALGO
 
