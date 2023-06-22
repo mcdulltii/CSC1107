@@ -13,6 +13,7 @@
 #include "priority.c"
 #include "srtf.c"
 #include "sjf.c"
+#include "rr.c"
 
 bool get_user_input();
 int get_valid_selection();
@@ -82,6 +83,15 @@ int main(int argc, char *argv[]) {
             break;
         case 4:
             // RR Scheduling
+            char* rr_str = "\nRound Robin Scheduling Algorithm:\n";
+            char input[5];
+            int value;
+            print(rr_str, OUTPUT_FILE);
+            printf("Enter a quantum value: \n");
+            // Get user input
+            fgets(input, sizeof(input), stdin);
+            sscanf(input, "%d", &value);
+            proc_sch_table = rr_scheduling(proc_table, value);
             break;
         case 5:
             // Priority Scheduling
