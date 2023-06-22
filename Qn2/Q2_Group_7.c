@@ -87,9 +87,10 @@ int main(int argc, char *argv[]) {
             break;
         case 5:
             // Priority Scheduling
+            bool is_preempt = get_preempt_selection();
             char* priority_str = "\nPriority Scheduling Algorithm:\n";
             print(priority_str, OUTPUT_FILE);
-            proc_sch_table = priority_scheduling(proc_table, get_preempt_selection());
+            proc_sch_table = priority_scheduling(proc_table, is_preempt);
             break;
         default:
             printf("Invalid selection!");
