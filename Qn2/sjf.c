@@ -9,13 +9,12 @@ float* sjf_scheduling(struct process* proc_table) {
     int* proc_sch_time = (int *)malloc(NUM_PROC * 5 * sizeof(int));
     float* proc_sch_table = (float*)malloc(3 * sizeof(float));
 
-
 #pragma region PROC_SCH_ALGO
     // Calculate turnaround time, waiting time, and response time
     float total_turnaround_time = 0;
     float total_waiting_time = 0;
     float total_response_time = 0;
-    
+
     int prev_current_time = 0, current_time = 0;
     int completed = 0;
     int selected_process, prev_process = -1;
@@ -59,44 +58,36 @@ float* sjf_scheduling(struct process* proc_table) {
             }
         }
 
-
         // No processes selected, step forward time unit
-            if (selected_process == -1) {
-                current_time++;
-                continue;
-            }
-
-            // Execute the selected process for one unit of time
-            proc_table[selected_process].burst_time--;
+        if (selected_process == -1) {
             current_time++;
+            continue;
+        }
 
-            // Save order of process schedule and start and end time
-            if (prev_process != selected_process) {
-                proc_sch_order[proc_sch_index] = proc_table[selected_process].pid;
-                proc_sch_time[proc_sch_index * 2] = prev_current_time;
-                proc_sch_time[proc_sch_index * 2 + 1] = current_time;
-                proc_sch_index++;
-                prev_current_time = current_time;
-            }
+        // Execute the selected process for the entire burst time
+        current_time += proc_table[selected_process].remaining_time;
+        proc_table[selected_process].remaining_time = 0;
 
-            // Update start time and end time for the process if it just started or completed
-            if (proc_table[selected_process].start_time == -1) {
-                proc_table[selected_process].start_time = current_time - 1;
-            }
-            if (proc_table[selected_process].remaining_time == 0) {
-                proc_table[selected_process].end_time = current_time;
-                completed++;
-            }
+        // Save order of process schedule and start and end time
+        if (prev_process != selected_process) {
+            proc_sch_order[proc_sch_index] = proc_table[selected_process].pid;
+            proc_sch_time[proc_sch_index * 2] = prev_current_time;
+            proc_sch_time[proc_sch_index * 2 + 1] = current_time;
+            proc_sch_index++;
+            prev_current_time = current_time;
+        }
 
-            // Check if the process is completed
-            if (proc_table[selected_process].remaining_time == 0) {
-                proc_table[selected_process].end_time = current_time;
-                completed++;
-            }
-
-            prev_process = selected_process;
-
-}
+        // Update start time and end time for the process if it just started or completed
+        if (proc_table[selected_process].start_time == -1) {
+            proc_table[selected_process].start_time = current_time - 1;
+        }
+        if (proc_table[selected_process].remaining_time == 0) {
+            proc_table[selected_process].end_time = current_time;
+            completed++;
+        }
+        prev_process = selected_process;
+    }
+    proc_sch_time[proc_sch_index * 2] = -1;
 #pragma endregion PROC_SCH_ALGO
 
 #pragma region PROC_SCH_CALC
