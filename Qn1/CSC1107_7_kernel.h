@@ -1,9 +1,6 @@
 #ifndef CSC1107_7_KERNEL
 #define CSC1107_7_KERNEL
 
-/*
- *  Prototypes - this would normally go in a .h file
- */
 int init_module(void);
 void cleanup_module(void);
 static int device_open(struct inode *, struct file *);
@@ -13,18 +10,37 @@ static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 
 #define SUCCESS 0
 #define DEVICE_NAME "qn1"   /* Dev name as it appears in /proc/devices   */
-#define BUF_LEN 80              /* Max length of the message from the device */
+#define BUF_LEN 64              /* Max length of the message from the device */
 
 /*
  * Global variables are declared as static, so are global within the file.
  */
 
+typedef enum hash {
+    sha512,
+    sha384,
+	sha256,
+	sha1,
+	md5
+} hash_t;
+
+typedef struct userspace {
+	char original_sentence[BUF_LEN];
+    char hashed_sentence[BUF_LEN];
+	hash_t hash_type;
+    int digest_length;
+} userspace_t;
+
+typedef struct hash_result {
+    char hashed_sentence[BUF_LEN];
+    int match;
+} hash_result_t;
+
+static userspace_t userspace;
+static hash_result_t hash_result;
 static int Major;               /* Major number assigned to our device driver */
 static int Device_Open = 0;     /* Is device open?
                                  * Used to prevent multiple access to device */
-static char msg[BUF_LEN];       /* The msg the device will give when asked */
-static char *msg_Ptr;
-static int msg_size;
 
 static struct class *cls;
 
