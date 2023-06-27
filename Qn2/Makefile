@@ -3,7 +3,7 @@ CC=gcc
 
 .PHONY: build run clean
 
-all: run
+all: clean run
 
 %: %.c
 	$(CC) $< -o $@
@@ -14,5 +14,4 @@ run: build
 	./$(FNAME)
 
 clean:
-	$(RM) $(FNAME)
-
+	$(RM) $(FNAME) $(FNAME).exe $(FNAME).txt
