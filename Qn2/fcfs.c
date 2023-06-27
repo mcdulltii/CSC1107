@@ -4,7 +4,7 @@
 #include "gantt.h"
 
 float* fcfs_scheduling(struct process* proc_table) {
-    // float* proc_sch_table = (float *)malloc(3 * sizeof(float));
+    float* proc_sch_table = (float *)malloc(3 * sizeof(float));
     int proc_sch_index = 0;
     int* proc_sch_order = (int *)malloc(NUM_PROC * 5 * sizeof(int));
     int* proc_sch_time = (int *)malloc(NUM_PROC * 5 * sizeof(int));
@@ -14,9 +14,7 @@ float* fcfs_scheduling(struct process* proc_table) {
     int total_waiting_time = 0;
     int total_response_time = 0;
 
-    int current_time = 0;
-    int completed = 0;
-    int prev_current_time = 0;
+    int current_time = 0, prev_current_time = 0;
 
     // Sort the processes based on arrival time using bubble sort
     for (int i = 0; i < NUM_PROC - 1; i++) {
@@ -44,14 +42,9 @@ float* fcfs_scheduling(struct process* proc_table) {
 
         // Update current time and completion status
         current_time += proc_table[i].burst_time;
-        completed++;
 
         // Update turnaround time
         total_turnaround_time += current_time - proc_table[i].arrival_time;
-
-        // Execute the selected process for one unit of time
-        current_time += proc_table[i].remaining_time;
-        proc_table[i].remaining_time = 0;
 
         proc_sch_order[proc_sch_index] = proc_table[i].pid;
         proc_sch_time[proc_sch_index * 2] = prev_current_time;
@@ -65,15 +58,12 @@ float* fcfs_scheduling(struct process* proc_table) {
         }
         if (proc_table[i].remaining_time == 0) {
             proc_table[i].end_time = current_time;
-            completed++;
         }
     }
     proc_sch_time[proc_sch_index * 2] = -1;
-#pragma endregion 
+#pragma endregion
 
 #pragma region PROC_SCH_CALC
-    float* proc_sch_table = (float*)malloc(3 * sizeof(float));
-
     proc_sch_table[0] = total_turnaround_time / NUM_PROC;
     proc_sch_table[1] = total_waiting_time / NUM_PROC;
     proc_sch_table[2] = total_response_time / NUM_PROC;
@@ -83,6 +73,6 @@ float* fcfs_scheduling(struct process* proc_table) {
     free(proc_sch_order);
     free(proc_sch_time);
 #pragma endregion PROC_SCH_CALC
-    
+
     return proc_sch_table;
 }
