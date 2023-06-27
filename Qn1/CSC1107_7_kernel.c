@@ -30,7 +30,6 @@ void convert_to_hex(const char *str, char *hex_str, size_t hex_str_size) {
     hex_str[hex_str_size - 1] = '\0';
 }
 
-
 // This function is called when the module is loaded
 int init_module(void)
 {
@@ -153,13 +152,13 @@ static ssize_t device_write(struct file *filp,
     printk(KERN_INFO "Hashed sentence from user space: %s\n", user_space_hex_string);
 
     switch(userspace.hash_type) {
-		case md5: hash = "md5"; break;
-		case sha1: hash = "sha1"; break;
-		case sha256: hash = "sha256"; break;
+        case md5: hash = "md5"; break;
+        case sha1: hash = "sha1"; break;
+        case sha256: hash = "sha256"; break;
         case sha384: hash = "sha384"; break;
         case sha512: hash = "sha512"; break;
-		default: pr_alert("%s: hashing algorithm not recognized\n", DEVICE_NAME); return -EFAULT;
-	}
+        default: pr_alert("%s: hashing algorithm not recognized\n", DEVICE_NAME); return -EFAULT;
+    }
 
     printk(KERN_INFO "Hashing Function: %s\n", hash);
 
@@ -201,4 +200,3 @@ MODULE_LICENSE("GPL");                  	// The license type
 MODULE_DESCRIPTION("qn1 Module"); // The description of the module
 MODULE_AUTHOR("Group 7");                     // The author of the module
 MODULE_VERSION("0.1a");                  	// The version of the module
-

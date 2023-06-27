@@ -14,26 +14,7 @@ A simple C application program named CSC1107_7_user.c, to access the
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 #include <termios.h>
-
-typedef enum hash {
-    sha512,
-    sha384,
-	sha256,
-	sha1,
-	md5
-} hash_t;
-
-typedef struct userspace {
-	char original_sentence[SHA512_DIGEST_LENGTH];
-    char hashed_sentence[SHA512_DIGEST_LENGTH];
-	hash_t hash_type;
-    int digest_length;
-} userspace_t;
-
-typedef struct hash_result {
-    char hashed_sentence[SHA512_DIGEST_LENGTH];
-    int match;
-} hash_result_t;
+#include "CSC1107_7_user.h"
 
 char* getCurrentDateTime() {
     // Get the current time
@@ -232,7 +213,6 @@ int main() {
 
     printf("Received comparison result: %s\n", 
             hash_result.match ? "Equal" : "Not equal");
-    
 
     exit(EXIT_SUCCESS);
 }
