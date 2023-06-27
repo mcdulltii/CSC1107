@@ -1,10 +1,6 @@
 #ifndef CSC1107_7_STRUCTS
 #define CSC1107_7_STRUCTS
 
-/*
- * Global variables are declared as static, so are global within the file.
- */
-
 typedef enum hash {
     sha512,
     sha384,
