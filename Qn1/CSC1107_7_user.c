@@ -20,7 +20,7 @@ char* getCurrentDateTime() {
     // Get the current time
     time_t currentTime;
     time(&currentTime);
- 
+
     // Convert the current time to the local time
     struct tm *localTime = localtime(&currentTime);
 
@@ -97,7 +97,7 @@ int main() {
     }
 
     int choice;
-    
+
     printf("Select which hashing algorithm to use: \n");
     printf("(1) SHA-512\n");
     printf("(2) SHA-384\n");
@@ -165,7 +165,7 @@ int main() {
     newattr = oldattr;
     newattr.c_lflag &= ~(ICANON | ECHO);        // Disable canonical mode and local echo
     tcsetattr(STDIN_FILENO, TCSANOW, &newattr); // Set the new terminal attributes
-    
+
     printf("Press Enter or Space to read from /dev/qn1\n\n");
 
     // Wait for user to press Enter or Space

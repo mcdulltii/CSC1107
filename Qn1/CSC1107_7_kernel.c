@@ -169,7 +169,7 @@ static ssize_t device_write(struct file *filp,
     desc->tfm = algorithm;
     err = crypto_shash_init(desc);
     err = crypto_shash_update(desc, userspace.original_sentence, strlen(userspace.original_sentence));
-    
+
     // Clear hash_result.hashed_sentence and store the hashed sentence in hash_result struct
     memset(hash_result.hashed_sentence, 0, BUF_LEN);
     err = crypto_shash_final(desc, hash_result.hashed_sentence);
