@@ -7,7 +7,7 @@ obj-m += $(FKERNEL).o
 all: build
 
 %: %.c
-	$(CC) $< -o $@
+	$(CC) $< -o $@ -lssl -lcrypto
 
 build: $(FNAME)
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
