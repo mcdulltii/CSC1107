@@ -12,7 +12,6 @@ static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 
 #define SUCCESS 0
 #define DEVICE_NAME "qn1"   /* Dev name as it appears in /proc/devices   */
-#define BUF_LEN 64              /* Max length of the message from the device */
 
 /*
  * Global variables are declared as static, so are global within the file.
