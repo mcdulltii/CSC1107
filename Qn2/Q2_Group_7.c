@@ -18,6 +18,7 @@
 bool get_user_input();
 int get_valid_selection();
 bool get_preempt_selection();
+int get_rr_quantum();
 
 int main(int argc, char *argv[]) {
     // Whether to generate process attributes randomly
@@ -84,14 +85,8 @@ int main(int argc, char *argv[]) {
         case 4:
             // RR Scheduling
             char* rr_str = "\nRound Robin Scheduling Algorithm:\n";
-            char input[5];
-            int value;
             print(rr_str, OUTPUT_FILE);
-            printf("Enter a quantum value: \n");
-            // Get user input
-            fgets(input, sizeof(input), stdin);
-            sscanf(input, "%d", &value);
-            proc_sch_table = rr_scheduling(proc_table, value);
+            proc_sch_table = rr_scheduling(proc_table, get_rr_quantum());
             break;
         case 5:
             // Priority Scheduling
@@ -184,5 +179,16 @@ retry_get_user_input:
         goto retry_get_user_input;
     }
     return value == 'y'; // false is implied
+}
+
+int get_rr_quantum() {
+    char input[5];
+    int value;
+retry_get_user_input:
+    printf("Enter a quantum value: ");
+    // Get user input
+    fgets(input, sizeof(input), stdin);
+    sscanf(input, "%d", &value);
+    return value;
 }
 
