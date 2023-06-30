@@ -1,6 +1,8 @@
 #ifndef CSC1107_7_STRUCTS
 #define CSC1107_7_STRUCTS
 
+#define BUF_LEN 64              /* Max length of the message from the device */
+
 typedef enum hash {
     sha512,
     sha384,
