@@ -25,7 +25,7 @@ float* sjf_scheduling(struct process* proc_table) {
 
     while (completed != NUM_PROC) {
         selected_process = -1;
-        // Sort the processes based on burst time using bubble sort
+        // Sort the processes based on burst time using bubble sort (ASCENDING ORDER)
         for (int i = 0; i < NUM_PROC - 1; i++) {
             for (int j = i + 1; j < NUM_PROC; j++) {
                 if (proc_table[j].burst_time < proc_table[i].burst_time) {
@@ -39,7 +39,7 @@ float* sjf_scheduling(struct process* proc_table) {
        // Find the process with the shortest burst time that has arrived and not completed yet
         for (int i = 0; i < NUM_PROC; i++) {
             if (proc_table[i].arrival_time <= current_time && \
-                    proc_table[i].burst_time > 0) {
+                    proc_table[i].remaining_time > 0) {
                 // Select the process with the shortest burst time
                 if (selected_process == -1 || \
                         proc_table[i].burst_time < proc_table[selected_process].burst_time) {
