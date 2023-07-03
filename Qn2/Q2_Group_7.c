@@ -10,6 +10,7 @@
 #include "attr.h"
 
 // Scheduling algorithms
+#include "fcfs.c"
 #include "priority.c"
 #include "srtf.c"
 #include "sjf.c"
@@ -71,6 +72,7 @@ int main(int argc, char *argv[]) {
     switch(get_valid_selection()) {
         case 1:
             // FCFS Scheduling
+            proc_sch_table = fcfs_scheduling(proc_table);
             break;
         case 2:
             // SJF Scheduling
@@ -90,9 +92,10 @@ int main(int argc, char *argv[]) {
             break;
         case 5:
             // Priority Scheduling
+            bool is_preempt = get_preempt_selection();
             char* priority_str = "\nPriority Scheduling Algorithm:\n";
             print(priority_str, OUTPUT_FILE);
-            proc_sch_table = priority_scheduling(proc_table, get_preempt_selection());
+            proc_sch_table = priority_scheduling(proc_table, is_preempt);
             break;
         default:
             printf("Invalid selection!");
