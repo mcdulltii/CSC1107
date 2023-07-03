@@ -71,9 +71,9 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
     int* proc_sch_time = (int *)malloc(NUM_PROC * 50 * sizeof(int));
 
 #pragma region PROC_SCH_ALGO
-    int total_turnaround_time = 0;
-    int total_waiting_time = 0;
-    int total_response_time = 0;
+    float total_turnaround_time = 0;
+    float total_waiting_time = 0;
+    float total_response_time = 0;
 
     int current_time = 0, prev_current_time = 0;
     int completed = 0;
@@ -92,66 +92,54 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
         proc_started[i] = false;
     }
 
+    bool needs_enqueue = false;
+    struct process* running_proc;
     while (completed != NUM_PROC) {
         // Find the process with the earliest arrival time that has arrived and not completed yet
+        bool has_enqueued = false;
         for (int i = 0; i < NUM_PROC; i++) {
             if (proc_started[i]) continue;
-            if (proc_table[i].arrival_time <= current_time && \
-                    proc_table[i].remaining_time > 0) {
+            for (int j = prev_current_time; j <= current_time; j++) {
+                if (proc_table[i].arrival_time <= j && \
+                        proc_table[i].remaining_time > 0) {
                     enqueue(&rr_queue, &proc_table[i]);
                     proc_started[i] = true;
+                    has_enqueued = true;
                     queue_len++;
+                }
             }
             // Step current_time if all processes haven't arrived
-            if (i == NUM_PROC - 1) {
-                current_time++;
+            if (i == NUM_PROC - 1 && !has_enqueued && isEmpty(&rr_queue)) {
+                current_time++; // TODO
             }
         }
+
+        if (needs_enqueue)
+            enqueue(&rr_queue, running_proc);
 
         // Run processes in round robin process queue
-        while (!isEmpty(&rr_queue)) {
-            struct process* running_proc = dequeue(&rr_queue);
-            if (proc_table[running_proc->pid].remaining_time <= q_val && \
-                    proc_table[running_proc->pid].remaining_time > 0) {
-                // Execute the selected process for the entire burst time
-                current_time += running_proc->remaining_time;
-                proc_table[running_proc->pid].remaining_time = 0;
-                queue_len--;
-                completed++;
-
-                // Save order of process schedule and start and end time
-                proc_sch_order[proc_sch_index] = running_proc->pid;
-                proc_sch_time[proc_sch_index * 2] = prev_current_time;
-                proc_sch_time[proc_sch_index * 2 + 1] = current_time;
-                proc_sch_index++;
-                proc_table[running_proc->pid].start_time = prev_current_time;
-                proc_table[running_proc->pid].end_time = current_time;
-                prev_current_time = current_time;
-            } else {
-                // Execute the selected process for one quantum unit of time
-                proc_table[running_proc->pid].remaining_time = running_proc->remaining_time - q_val;
-                current_time += q_val;
-                enqueue(&rr_queue, running_proc);
-
-                // Save order of process schedule and start and end time
-                proc_sch_order[proc_sch_index] = running_proc->pid;
-                proc_sch_time[proc_sch_index * 2] = prev_current_time;
-                proc_sch_time[proc_sch_index * 2 + 1] = current_time;
-                proc_sch_index++;
-                proc_table[running_proc->pid].start_time = prev_current_time;
-                proc_table[running_proc->pid].end_time = current_time;
-                prev_current_time = current_time;
-            }
-
-            // Check for processes that will be arriving
-            for (int i = 0; i < NUM_PROC; i++) {
-                if (proc_started[i]) continue;
-                // Enqueue next process that has arrived
-                if (proc_table[i].arrival_time <= current_time)
-                    goto get_next_process;
-            }
+        running_proc = dequeue(&rr_queue);
+        if (proc_table[running_proc->pid].remaining_time <= q_val && \
+                proc_table[running_proc->pid].remaining_time > 0) {
+            // Execute the selected process for the entire burst time
+            current_time += running_proc->remaining_time;
+            proc_table[running_proc->pid].remaining_time = 0;
+            queue_len--;
+            completed++;
+            needs_enqueue = false;
+        } else {
+            // Execute the selected process for one quantum unit of time
+            proc_table[running_proc->pid].remaining_time = running_proc->remaining_time - q_val;
+            current_time += q_val;
+            needs_enqueue = true;
         }
-get_next_process:
+        
+        // Save order of process schedule and start and end time
+        proc_sch_order[proc_sch_index] = running_proc->pid;
+        proc_sch_time[proc_sch_index * 2] = prev_current_time;
+        proc_sch_time[proc_sch_index * 2 + 1] = current_time;
+        proc_sch_index++;
+        prev_current_time = current_time;
     }
 #pragma endregion PROC_SCH_ALGO
 
@@ -160,12 +148,26 @@ get_next_process:
 
     // Calculate turnaround time, waiting time, and response time
     for (int i = 0; i < NUM_PROC; i++) {
-        proc_table[i].turnaround_time = proc_table[i].end_time - proc_table[i].arrival_time;
-        proc_table[i].waiting_time = proc_table[i].turnaround_time - proc_table[i].burst_time;
-        proc_table[i].response_time = proc_table[i].start_time - proc_table[i].arrival_time;
+        proc_table[i].turnaround_time = 0;
+        for (int j = proc_sch_index; j > 0; j--) {
+            if (proc_sch_order[j] == i) {
+                proc_table[i].turnaround_time += proc_sch_time[j * 2 + 1] - proc_table[i].arrival_time;
+                break;
+            }
+        }
         total_turnaround_time += proc_table[i].turnaround_time;
+    }
+    for (int i = 0; i < NUM_PROC; i++) {
+        proc_table[i].waiting_time = proc_table[i].turnaround_time - proc_table[i].burst_time;
         total_waiting_time += proc_table[i].waiting_time;
-        total_response_time += proc_table[i].response_time;
+    }
+    for (int i = 0; i < NUM_PROC; i++) {
+        for (int j = 0; j < proc_sch_index; j++) {
+            if (proc_sch_order[j] == i) {
+                total_response_time += proc_sch_time[j * 2] - proc_table[i].arrival_time;
+                break;
+            }
+        }
     }
 
     proc_sch_table[0] = total_turnaround_time / NUM_PROC;
