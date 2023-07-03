@@ -34,7 +34,7 @@ retry_get_valid_selection:
     "3. Shortest Remaining Time First Scheduling\n"
     "4. Round Robin Scheduling\n"
     "5. Priority Scheduling\n"
-    "Choose a process selection algorithm [1-5]: ");
+    "Choose a process scheduling algorithm [1-5]: ");
     // Get user input
     fgets(input, sizeof(input), stdin);
     sscanf(input, "%d", &value);
