@@ -13,3 +13,18 @@ make
 ```shell
 make clean
 ```
+
+## Details
+
+![prompt1](img/prompt1.png)
+
+![prompt2](img/prompt2.png)
+
+![prompt3](img/prompt3.png)
+
+![output1](img/output1.png)
+
+![output2](img/output2.png)
+
+![output3](img/output3.png)
+
