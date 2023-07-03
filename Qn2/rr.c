@@ -95,8 +95,8 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
     bool needs_enqueue = false;
     struct process* running_proc;
     while (completed != NUM_PROC) {
-        // Find the process with the earliest arrival time that has arrived and not completed yet
-        bool has_enqueued = false;
+        // Enqueue the processes that has arrived and not completed yet
+retry:
         for (int i = 0; i < NUM_PROC; i++) {
             if (proc_started[i]) continue;
             for (int j = prev_current_time; j <= current_time; j++) {
@@ -104,16 +104,17 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
                         proc_table[i].remaining_time > 0) {
                     enqueue(&rr_queue, &proc_table[i]);
                     proc_started[i] = true;
-                    has_enqueued = true;
                     queue_len++;
                 }
             }
             // Step current_time if all processes haven't arrived
-            if (i == NUM_PROC - 1 && !has_enqueued && isEmpty(&rr_queue)) {
-                current_time++; // TODO
+            if (i == NUM_PROC - 1 && isEmpty(&rr_queue)) {
+                current_time++;
+                goto retry;
             }
         }
 
+        // Enqueue process from previous execution
         if (needs_enqueue)
             enqueue(&rr_queue, running_proc);
 
@@ -121,7 +122,7 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
         running_proc = dequeue(&rr_queue);
         if (proc_table[running_proc->pid].remaining_time <= q_val && \
                 proc_table[running_proc->pid].remaining_time > 0) {
-            // Execute the selected process for the entire burst time
+            // Execute the selected process for its remaining time
             current_time += running_proc->remaining_time;
             proc_table[running_proc->pid].remaining_time = 0;
             queue_len--;
@@ -133,7 +134,7 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
             current_time += q_val;
             needs_enqueue = true;
         }
-        
+
         // Save order of process schedule and start and end time
         proc_sch_order[proc_sch_index] = running_proc->pid;
         proc_sch_time[proc_sch_index * 2] = prev_current_time;
@@ -141,15 +142,16 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
         proc_sch_index++;
         prev_current_time = current_time;
     }
+    proc_sch_time[proc_sch_index * 2] = -1;
 #pragma endregion PROC_SCH_ALGO
 
 #pragma region PROC_SCH_CALC
     float* proc_sch_table = (float *)malloc(3 * sizeof(float));
 
-    // Calculate turnaround time, waiting time, and response time
+    // Calculate turnaround time
     for (int i = 0; i < NUM_PROC; i++) {
         proc_table[i].turnaround_time = 0;
-        for (int j = proc_sch_index; j > 0; j--) {
+        for (int j = proc_sch_index - 1; j >= 0; j--) {
             if (proc_sch_order[j] == i) {
                 proc_table[i].turnaround_time += proc_sch_time[j * 2 + 1] - proc_table[i].arrival_time;
                 break;
@@ -157,10 +159,14 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
         }
         total_turnaround_time += proc_table[i].turnaround_time;
     }
+
+    // Calculate waiting time
     for (int i = 0; i < NUM_PROC; i++) {
         proc_table[i].waiting_time = proc_table[i].turnaround_time - proc_table[i].burst_time;
         total_waiting_time += proc_table[i].waiting_time;
     }
+
+    // Calculate response time
     for (int i = 0; i < NUM_PROC; i++) {
         for (int j = 0; j < proc_sch_index; j++) {
             if (proc_sch_order[j] == i) {
@@ -176,6 +182,7 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
 
     // Draw gantt chart
     visualise_gantt(proc_sch_order, proc_sch_time, proc_sch_index);
+    free(proc_started);
     free(proc_sch_order);
     free(proc_sch_time);
 #pragma endregion PROC_SCH_CALC
