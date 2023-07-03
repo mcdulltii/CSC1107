@@ -1,6 +1,7 @@
 #ifndef INIT_H
 #define INIT_H
 
+#define NUM_ALGO 6
 #define NUM_PROC 6
 #define OUTPUT_FILE "Q2_Group_7.txt"
 
