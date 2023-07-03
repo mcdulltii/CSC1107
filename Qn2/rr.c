@@ -1,4 +1,4 @@
-#include "malloc.h"
+#include <malloc.h>
 #include "init.h"
 #include "attr.h"
 #include "gantt.h"

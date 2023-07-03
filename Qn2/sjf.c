@@ -7,7 +7,6 @@ float* sjf_scheduling(struct process* proc_table) {
     int proc_sch_index = 0;
     int* proc_sch_order = (int *)malloc(NUM_PROC * 5 * sizeof(int));
     int* proc_sch_time = (int *)malloc(NUM_PROC * 5 * sizeof(int));
-    float* proc_sch_table = (float*)malloc(3 * sizeof(float));
 
 #pragma region PROC_SCH_ALGO
     // Calculate turnaround time, waiting time, and response time
@@ -91,6 +90,7 @@ float* sjf_scheduling(struct process* proc_table) {
 #pragma endregion PROC_SCH_ALGO
 
 #pragma region PROC_SCH_CALC
+    float* proc_sch_table = (float*)malloc(3 * sizeof(float));
 
     for (int i = 0; i < NUM_PROC; i++) {
         proc_table[i].turnaround_time = proc_table[i].end_time - proc_table[i].arrival_time;
