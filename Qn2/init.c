@@ -54,36 +54,41 @@ int** init(int scheduling_selection, int rr_quantum, bool is_preempt) {
     switch (scheduling_selection) {
         case 0:
             // FCFS Scheduling
-            proc_attr_table[1] = _gen_burst_time();
+            proc_attr_table[1] = _gen_burst_time(BURST_LIMIT);
             proc_attr_table[0] = _gen_fcfs_arrival_time(proc_attr_table[1]);
-            proc_attr_table[2] = _gen_priority();
+            proc_attr_table[2] = _gen_priority(PRIO_LIMIT);
             break;
         case 1:
             // SJF Scheduling
-            proc_attr_table[0] = _gen_arrival_time();
+            proc_attr_table[0] = _gen_arrival_time(ARRIVAL_LIMIT);
             proc_attr_table[1] = _gen_sjf_burst_time(proc_attr_table[0]);
-            proc_attr_table[2] = _gen_priority();
+            proc_attr_table[2] = _gen_priority(PRIO_LIMIT);
             break;
         case 2:
             // SRTF Scheduling
-            proc_attr_table[0] = _gen_arrival_time();
-            proc_attr_table[1] = _gen_burst_time();
-            proc_attr_table[2] = _gen_priority();
+            proc_attr_table[0] = _gen_arrival_time(ARRIVAL_LIMIT);
+            proc_attr_table[1] = _gen_burst_time(BURST_LIMIT);
+            proc_attr_table[2] = _gen_priority(PRIO_LIMIT);
             break;
         case 3:
             // RR Scheduling
-            proc_attr_table[0] = _gen_arrival_time();
+            proc_attr_table[0] = _gen_arrival_time(ARRIVAL_LIMIT);
             proc_attr_table[1] = _gen_rr_burst_time(rr_quantum);
-            proc_attr_table[2] = _gen_priority();
+            proc_attr_table[2] = _gen_priority(PRIO_LIMIT);
             break;
         case 4:
             // Priority Scheduling
-            proc_attr_table[0] = _gen_arrival_time();
-            proc_attr_table[1] = _gen_sjf_burst_time(proc_attr_table[0]);
-            if (is_preempt)
-                proc_attr_table[2] = _gen_preempt_priority(proc_attr_table[0], proc_attr_table[1]);
-            else
+            if (is_preempt) {
+                // Preemptive
+                proc_attr_table[0] = _gen_arrival_time(1);
+                proc_attr_table[1] = _gen_preempt_attr(BURST_START, BURST_END, proc_attr_table[0]);
+                proc_attr_table[2] = _gen_preempt_attr(PRIO_START, 8, proc_attr_table[0]);
+            } else {
+                // Non-preemptive
+                proc_attr_table[0] = _gen_arrival_time(ARRIVAL_LIMIT);
+                proc_attr_table[1] = _gen_sjf_burst_time(proc_attr_table[0]);
                 proc_attr_table[2] = _gen_nonpreempt_priority(proc_attr_table[1]);
+            }
             break;
         default:
             printf("Invalid selection!\n");
@@ -126,16 +131,16 @@ regen_table:
     return rand_table;
 }
 
-int* _gen_arrival_time() {
-    return _gen_rand_table(ARRIVAL_START, ARRIVAL_END, NUM_PROC, ARRIVAL_LIMIT);
+int* _gen_arrival_time(int limit) {
+    return _gen_rand_table(ARRIVAL_START, ARRIVAL_END, NUM_PROC, limit);
 }
 
-int* _gen_burst_time() {
-    return _gen_rand_table(BURST_START, BURST_END, NUM_PROC, BURST_LIMIT);
+int* _gen_burst_time(int limit) {
+    return _gen_rand_table(BURST_START, BURST_END, NUM_PROC, limit);
 }
 
-int* _gen_priority() {
-    return _gen_rand_table(PRIO_START, PRIO_END, NUM_PROC, PRIO_LIMIT);
+int* _gen_priority(int limit) {
+    return _gen_rand_table(PRIO_START, PRIO_END, NUM_PROC, limit);
 }
 
 int* _get_attr_values(const char* attr_name) {
@@ -267,36 +272,32 @@ regen_table:
     return rand_table;
 }
 
-int* _gen_preempt_priority(int* arrival_time, int* burst_time) {
-    int start = PRIO_START, end = 8, num_processes = NUM_PROC, limit = 1;
-    // Save burst and arrival times in struct object
-    struct time burst_arrival_time_obj[num_processes];
+int* _gen_preempt_attr(int start, int end, int* inpt_time) {
+    int num_processes = NUM_PROC, limit = 1;
+    // Save arrival times in struct object
+    struct time time_obj[num_processes];
     for (int i=0; i<num_processes; i++) {
-        burst_arrival_time_obj[i].value = arrival_time[i];
-        burst_arrival_time_obj[i].value2 = burst_time[i];
-        burst_arrival_time_obj[i].index = i;
+        time_obj[i].value = inpt_time[i];
+        time_obj[i].index = i;
     }
-    // Sort burst and arrival times to retrieve indexes
-    qsort(burst_arrival_time_obj, num_processes, sizeof(burst_arrival_time_obj[0]), cmp2);
+    // Sort arrival times to retrieve indexes
+    qsort(time_obj, num_processes, sizeof(time_obj[0]), cmp);
 
     // Allocate memory
     int* rand_table = (int *)malloc(num_processes * sizeof(int));
 
+    int temp_end = end;
 regen_table:
     for (int i=num_processes-1; i>=0; i--) {
-        int index = burst_arrival_time_obj[i].index;
-        if (num_processes - i > 1) {
-            struct time* prev_obj = &burst_arrival_time_obj[i+1];
-            // Calculate remaining time using previous arrival time and previous generated burst time minus current arrival time
-            int remaining_time = prev_obj->value + prev_obj->value2 - burst_arrival_time_obj[i].value;
-            if (remaining_time >= 0) {
-                start = start + 1;
-            }
+        int index = time_obj[i].index;
+        if (temp_end < start) {
+            temp_end = end;
+            goto regen_table;
         }
-        // Generate random number based on burst and arrival time
-        rand_table[index] = rand() % (end - start + 1) + start;
+        // Generate random number based on arrival time
+        rand_table[index] = rand() % (temp_end - start + 1) + start;
+        temp_end = rand_table[index] - 1;
     }
-    start = PRIO_START;
 
     // Check for duplicates
     int* dup_table = (int *)calloc(end - start, sizeof(int));
