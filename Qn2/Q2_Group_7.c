@@ -12,11 +12,22 @@
 #include "Q2_Group_7.h"
 
 int main(int argc, char *argv[]) {
+    // Which process scheduling algorithm to use
+    int rr_quantum = 2;
+    bool is_preempt = false;
+    int scheduling_selection = _get_valid_selection() - 1;
+    // Get quantum time if Round Robin scheduling algorithm is selected
+    if (scheduling_selection == 3)
+        rr_quantum = _get_rr_quantum();
+    // Prompt for preemption if Priority scheduling algorithm is selected
+    else if (scheduling_selection == 4)
+        is_preempt = _get_preempt_selection();
+
     // Whether to generate process attributes randomly
     int** proc_attr_table;
     if (_get_user_input()) {
         // Generate process attributes randomly
-        proc_attr_table = init();
+        proc_attr_table = init(scheduling_selection, rr_quantum, is_preempt);
     } else {
         // Retrieve process attributes from input
         proc_attr_table = init_usr();
@@ -56,8 +67,6 @@ int main(int argc, char *argv[]) {
 #pragma endregion PROC_ATTR_TABLE
 
 #pragma region PROC_SCH_SELECTION
-    // Which process scheduling algorithm to use
-    int scheduling_selection = _get_valid_selection() - 1;
     float** proc_sch_table = (float**)malloc(NUM_ALGO * sizeof(float*));
     switch(scheduling_selection) {
         case 0:
@@ -74,19 +83,17 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             // RR Scheduling
-            int rr_quantum = _get_rr_quantum();
             proc_sch_table[scheduling_selection] = _run_rr_scheduling(proc_table, rr_quantum);
             break;
         case 4:
             // Priority Scheduling
-            bool is_preempt = _get_preempt_selection();
             if (is_preempt)
                 scheduling_selection++;
             proc_sch_table[scheduling_selection] = _run_priority_scheduling(proc_table, is_preempt);
             break;
         default:
-            printf("Invalid selection!");
-            return -1;
+            printf("Invalid selection!\n");
+            exit(-1);
     }
 
     // Run rest of process scheduling algorithms
