@@ -28,6 +28,7 @@ int* _gen_priority();
 int* _get_attr_values(const char*);
 int* _gen_fcfs_arrival_time(int*);
 int* _gen_sjf_burst_time(int*);
+int* _gen_rr_burst_time(int);
 
 #endif
 

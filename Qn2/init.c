@@ -54,7 +54,7 @@ int** init(int scheduling_selection, int rr_quantum, bool is_preempt) {
         case 3:
             // RR Scheduling
             proc_attr_table[0] = _gen_arrival_time();
-            proc_attr_table[1] = _gen_burst_time();
+            proc_attr_table[1] = _gen_rr_burst_time(rr_quantum);
             proc_attr_table[2] = _gen_priority();
             break;
         case 4:
@@ -202,6 +202,34 @@ regen_table:
         prev_burst_time = rand_table[index];
     }
     start = BURST_START;
+
+    // Check for duplicates
+    int* dup_table = (int *)calloc(end - start, sizeof(int));
+    for (int i=0; i<num_processes; i++) {
+        dup_table[rand_table[i] - start]++;
+        if (dup_table[rand_table[i] - start] > limit) {
+            // Regenerate random values since duplicate limit reached
+            free(dup_table);
+            goto regen_table;
+        }
+    }
+    free(dup_table);
+    return rand_table;
+}
+
+int* _gen_rr_burst_time(int rr_quantum) {
+    int start = BURST_START, end = BURST_END, num_processes = NUM_PROC, limit = NUM_PROC;
+    // Set start of random time as the larger value
+    start = rr_quantum > start ? rr_quantum : start;
+
+    // Allocate memory
+    int* rand_table = (int *)malloc(num_processes * sizeof(int));
+
+regen_table:
+    for (int i=0; i<num_processes; i++) {
+        // Generate random number from `start` to `end`
+        rand_table[i] = rand() % (end - start + 1) + start;
+    }
 
     // Check for duplicates
     int* dup_table = (int *)calloc(end - start, sizeof(int));
