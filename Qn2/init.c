@@ -42,7 +42,7 @@ int** init(int scheduling_selection, int rr_quantum, bool is_preempt) {
         case 1:
             // SJF Scheduling
             proc_attr_table[0] = _gen_arrival_time();
-            proc_attr_table[1] = _gen_burst_time();
+            proc_attr_table[1] = _gen_sjf_burst_time(proc_attr_table[0]);
             proc_attr_table[2] = _gen_priority();
             break;
         case 2:
@@ -105,15 +105,15 @@ regen_table:
 }
 
 int* _gen_arrival_time() {
-    return _gen_rand_table(0, 8, NUM_PROC, NUM_PROC);
+    return _gen_rand_table(ARRIVAL_START, ARRIVAL_END, NUM_PROC, NUM_PROC);
 }
 
 int* _gen_burst_time() {
-    return _gen_rand_table(3, 10, NUM_PROC, NUM_PROC);
+    return _gen_rand_table(BURST_START, BURST_END, NUM_PROC, NUM_PROC);
 }
 
 int* _gen_priority() {
-    return _gen_rand_table(1, 4, NUM_PROC, NUM_PROC);
+    return _gen_rand_table(PRIO_START, PRIO_END, NUM_PROC, NUM_PROC);
 }
 
 int* _get_attr_values(const char* attr_name) {
@@ -127,7 +127,7 @@ int* _get_attr_values(const char* attr_name) {
 }
 
 int* _gen_fcfs_arrival_time(int* burst_time) {
-    int start = 0, end = 8, num_processes = NUM_PROC, limit = NUM_PROC;
+    int start = ARRIVAL_START, end = ARRIVAL_END, num_processes = NUM_PROC, limit = NUM_PROC;
     // Save burst times in struct object
     struct time burst_time_obj[num_processes];
     for (int i=0; i<num_processes; i++) {
@@ -144,7 +144,7 @@ regen_table:
     for (int i=num_processes-1; i>=0; i--) {
         int index = burst_time_obj[i].index;
         if (start > end) {
-            start = 0;
+            start = ARRIVAL_START;
             goto regen_table;
         }
         // Generate random number based on burst time
@@ -154,7 +154,54 @@ regen_table:
         else
             start = rand_table[index] + 1;
     }
-    start = 0;
+    start = ARRIVAL_START;
+
+    // Check for duplicates
+    int* dup_table = (int *)calloc(end - start, sizeof(int));
+    for (int i=0; i<num_processes; i++) {
+        dup_table[rand_table[i] - start]++;
+        if (dup_table[rand_table[i] - start] > limit) {
+            // Regenerate random values since duplicate limit reached
+            free(dup_table);
+            goto regen_table;
+        }
+    }
+    free(dup_table);
+    return rand_table;
+}
+
+int* _gen_sjf_burst_time(int* arrival_time) {
+    int start = BURST_START, end = BURST_END, num_processes = NUM_PROC, limit = NUM_PROC;
+    // Save arrival times in struct object
+    struct time arrival_time_obj[num_processes];
+    for (int i=0; i<num_processes; i++) {
+        arrival_time_obj[i].value = arrival_time[i];
+        arrival_time_obj[i].index = i;
+    }
+    // Sort arrival times to retrieve indexes
+    qsort(arrival_time_obj, num_processes, sizeof(arrival_time_obj[0]), cmp);
+
+    // Allocate memory
+    int* rand_table = (int *)malloc(num_processes * sizeof(int));
+
+    int prev_burst_time = 0;
+regen_table:
+    for (int i=num_processes-1; i>=0; i--) {
+        int index = arrival_time_obj[i].index;
+        if (num_processes - i > 1) {
+            // Calculate remaining time using previous generated burst time minus current arrival time
+            int remaining_time = prev_burst_time - arrival_time_obj[i].value;
+            if (remaining_time >= 0) {
+                start = start > remaining_time ? start : remaining_time;
+            } else {
+                start = BURST_START;
+            }
+        }
+        // Generate random number based on arrival time
+        rand_table[index] = rand() % (end - start + 1) + start;
+        prev_burst_time = rand_table[index];
+    }
+    start = BURST_START;
 
     // Check for duplicates
     int* dup_table = (int *)calloc(end - start, sizeof(int));

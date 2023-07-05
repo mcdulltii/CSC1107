@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <float.h>
 
 // Libraries
 #include "fort.c"
@@ -130,10 +129,10 @@ int main(int argc, char *argv[]) {
 #pragma endregion PROC_SCH_SELECTION
 
 #pragma region PROC_SCH_COMPARE
-    float shortest_turnaround_time = FLT_MAX;
-    float shortest_waiting_time = FLT_MAX;
-    float shortest_response_time = FLT_MAX;
-    int shortest_proc_sch[3] = {-1, -1, -1};
+    float shortest_turnaround_time = proc_sch_table[scheduling_selection][0];
+    float shortest_waiting_time = proc_sch_table[scheduling_selection][1];
+    float shortest_response_time = proc_sch_table[scheduling_selection][2];
+    int shortest_proc_sch[3] = {scheduling_selection, scheduling_selection, scheduling_selection};
     // *proc_sch_table = [avg_turnaround_time, avg_waiting_time, avg_response_time]
     for (int i = 0; i < NUM_ALGO; i++) {
         // Get process scheduling algorithm with the shortest turnaround time
