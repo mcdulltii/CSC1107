@@ -86,7 +86,7 @@ int** init(int scheduling_selection, int rr_quantum, bool is_preempt) {
             } else {
                 // Non-preemptive
                 proc_attr_table[0] = _gen_arrival_time(ARRIVAL_LIMIT);
-                proc_attr_table[1] = _gen_sjf_burst_time(proc_attr_table[0]);
+                proc_attr_table[1] = _gen_burst_time(BURST_LIMIT);
                 proc_attr_table[2] = _gen_nonpreempt_priority(proc_attr_table[1]);
             }
             break;
