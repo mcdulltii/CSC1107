@@ -198,7 +198,8 @@ regen_table:
 }
 
 int* _gen_sjf_burst_time(int* arrival_time) {
-    int start = BURST_START, end = BURST_END, num_processes = NUM_PROC, limit = BURST_LIMIT;
+    //limit = 2 as 3 duplicates more prone to losing
+    int start = BURST_START, end = BURST_END, num_processes = NUM_PROC, limit = 2; 
     // Save arrival times in struct object
     struct time arrival_time_obj[num_processes];
     for (int i=0; i<num_processes; i++) {
