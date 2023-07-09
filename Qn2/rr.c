@@ -94,24 +94,28 @@ float* rr_scheduling(struct process* proc_table, int q_val) {
 
     bool needs_enqueue = false;
     struct process* running_proc;
+    int prev_process = -1;
     while (completed != NUM_PROC) {
         // Enqueue the processes that has arrived and not completed yet
 retry:
         for (int i = 0; i < NUM_PROC; i++) {
+            // Skip if process has already been enqueued
             if (proc_started[i]) continue;
             for (int j = prev_current_time; j <= current_time; j++) {
                 if (proc_table[i].arrival_time <= j && \
                         proc_table[i].remaining_time > 0) {
+                    // Enqueue process and save state in proc_started
                     enqueue(&rr_queue, &proc_table[i]);
                     proc_started[i] = true;
                     queue_len++;
                 }
             }
-            // Step current_time if all processes haven't arrived
-            if (i == NUM_PROC - 1 && isEmpty(&rr_queue)) {
-                current_time++;
-                goto retry;
-            }
+        }
+        // Step current_time if all processes haven't arrived
+        if (!needs_enqueue && isEmpty(&rr_queue)) {
+            current_time++;
+            prev_current_time = current_time;
+            goto retry;
         }
 
         // Enqueue process from previous execution
@@ -136,11 +140,14 @@ retry:
         }
 
         // Save order of process schedule and start and end time
-        proc_sch_order[proc_sch_index] = running_proc->pid;
-        proc_sch_time[proc_sch_index * 2] = prev_current_time;
-        proc_sch_time[proc_sch_index * 2 + 1] = current_time;
-        proc_sch_index++;
-        prev_current_time = current_time;
+        if (prev_process != running_proc->pid) {
+            proc_sch_order[proc_sch_index] = running_proc->pid;
+            proc_sch_time[proc_sch_index * 2] = prev_current_time;
+            proc_sch_time[proc_sch_index * 2 + 1] = current_time;
+            proc_sch_index++;
+            prev_current_time = current_time;
+        }
+        prev_process = running_proc->pid;
     }
     proc_sch_time[proc_sch_index * 2] = -1;
 #pragma endregion PROC_SCH_ALGO
