@@ -65,7 +65,8 @@ sudo rmmod CSC1107_7_kernel
 dmesg | tail -n 3
 
 # Delete the user from os
-sudo rm -f CSC1107_7
+sudo userdel CSC1107_7 
+# sudo rm -f CSC1107_7
 
 # Display the line containing new user if still present. else, deleted successfully
 sudo grep CSC1107_7 /etc/passwd
