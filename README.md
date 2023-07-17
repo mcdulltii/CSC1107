@@ -2,4 +2,4 @@
 
 SIT CSC1107 (Operating Systems) Assignment
 
-The bash script and kernels are specified to be set up within /home/lk-pi/linux/CSC1107_assignment.
+Refer to [Qn 1 README](Qn1/README.md) and [Qn 2 README](Qn2/README.md) for more details.
