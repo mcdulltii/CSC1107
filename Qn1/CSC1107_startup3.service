@@ -1,0 +1,10 @@
+[Unit]
+Description=Automatic Invocation of Script(3 times)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash ~/linux/CSC1107_assignment/CSC1107_autostart3.sh
+
+[Install]
+WantedBy=default.target

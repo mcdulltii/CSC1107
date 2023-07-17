@@ -1,5 +1,9 @@
 # Qn 1
 
+## Details
+
+The bash script and kernels in this folder are specified to be set up within `~/linux/CSC1107_assignment`.
+
 ## Usage
 
 1. Compile kernel module and user binary
