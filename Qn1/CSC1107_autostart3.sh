@@ -1,6 +1,6 @@
 #!/bin/bash
 
-counter_file="/home/lk-pi/linux/CSC1107_assignment/counter"
+counter_file="~/linux/CSC1107_assignment/counter"
 
 max=3
 
@@ -25,7 +25,7 @@ if [ $reboot_counter -gt $max ]; then
 
 else
   # Run the bash shell script
-  /home/lk-pi/linux/CSC1107_assignment/CSC1107_7.sh
+  ~/linux/CSC1107_assignment/CSC1107_7.sh
   # Save the updated counter value to the file
   echo "$reboot_counter" > "$counter_file"
 

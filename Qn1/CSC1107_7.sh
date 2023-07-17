@@ -30,7 +30,7 @@ echo "Current working directory: $(pwd)"
 sudo cp ~/linux/CSC1107_assignment/* .
 
 # Compile loadable kernel module with makefile utility
-make -C /lib/modules/6.1.21-v8+/build M=/home/lk-pi/linux/CSC1107_assignment modules
+make -C /lib/modules/6.1.21-v8+/build M=~/linux/CSC1107_assignment modules
 
 # List all files in current folder
 ls

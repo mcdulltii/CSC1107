@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /home/lk-pi/CSC1107_autostart3.sh
+ExecStart=/bin/bash ~/linux/CSC1107_assignment/CSC1107_7.sh
 
 [Install]
 WantedBy=default.target
